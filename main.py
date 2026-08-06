@@ -9,9 +9,9 @@ def main():
     
 
     pygame.init()
+    clock = pygame.time.Clock()
+    dt: float = clock.tick(60) / 1000.0
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    screen.fill((255, 0, 0))
-    pygame.display.flip()
 
     while True:
         log_state()
@@ -19,7 +19,8 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
-        
+        screen.fill((255, 0, 0))
+        pygame.display.flip()
        
 
 
