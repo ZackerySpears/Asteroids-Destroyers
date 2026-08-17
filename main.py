@@ -1,7 +1,8 @@
+import sys
 import pygame
 from asteroid import Asteroid
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
-from logger import log_state
+from logger import log_state, log_event
 from player import Player, PLAYER_RADIUS
 from asteroidfield import AsteroidField
 
@@ -42,8 +43,14 @@ def main():
         # update all updatable sprites
         updatable.update(dt)
 
+        for asteroid in asteroids:
+            if player.collides_with(asteroid):
+                log_event("player_hit")
+                print("Game over!")
+                sys.exit()
+
         # render
-        screen.fill(("red"))
+        screen.fill((6,30,41))
         for sprite in drawable:
             # our sprites implement `draw(screen)` (not `image/rect`), so call it
             sprite.draw(screen)

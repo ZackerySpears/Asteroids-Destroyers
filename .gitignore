@@ -5,10 +5,7 @@ build/
 dist/
 wheels/
 *.egg-info
-
-
-# Virtual environments
 .venv
-
-# Ignore logs so the don't get commited to the repository
 game_state.jsonl
+game_events.jsonl
+
