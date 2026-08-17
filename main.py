@@ -5,54 +5,64 @@ from constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from logger import log_state, log_event
 from player import Player, PLAYER_RADIUS
 from asteroidfield import AsteroidField
+from shot import Shot
 
 
 def main():
+    # Show basic startup info so the game session is easier to diagnose.
     print(f"Starting Asteroids with pygame version: {pygame.version.ver}")
     print(f"Screen width: {SCREEN_WIDTH}")
     print(f"Screen height: {SCREEN_HEIGHT}")
 
+    # Initialize pygame and create the main window and timing object.
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
 
-    # create groups first for player, then set the class containers so sprites auto-add
+    # Create sprite groups first, then assign each class's containers so new
+    # instances are automatically added to the correct groups.
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
-    Player.containers = (updatable, drawable)
-
-    # create groups first for asteroids, then set the class containers so sprites auto-add
     asteroids = pygame.sprite.Group()
+    shots = pygame.sprite.Group()
+    Player.containers = (updatable, drawable)
     Asteroid.containers = (asteroids, updatable, drawable)
-
     AsteroidField.containers = (updatable)
+    Shot.containers = (shots, updatable, drawable)
     asteroid_field = AsteroidField()
 
-    # now create the player (it will be added to the groups in CircleShape.__init__)
+    shots = pygame.sprite.Group()
+    
+
+    # Create the player in the center of the screen; pygame will auto-add it.
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, PLAYER_RADIUS)
 
     while True:
-        # frame timing
+        # Limit the loop to 60 FPS and convert the elapsed time to seconds.
         dt: float = clock.tick(60) / 1000.0
 
+        # Log the game state each frame for debugging and tracking.
         log_state()
+
+        # Handle window events like closing the game.
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
 
-        # update all updatable sprites
+        # Update every sprite that implements an update(dt) method.
         updatable.update(dt)
 
+        # Check for collisions between the player and any asteroid.
         for asteroid in asteroids:
             if player.collides_with(asteroid):
                 log_event("player_hit")
                 print("Game over!")
                 sys.exit()
 
-        # render
-        screen.fill((6,30,41))
+        # Draw the background and all visible sprites each frame.
+        screen.fill((6, 30, 41))
         for sprite in drawable:
-            # our sprites implement `draw(screen)` (not `image/rect`), so call it
+            # These sprites implement draw(screen) instead of using an image/rect.
             sprite.draw(screen)
 
         pygame.display.flip()

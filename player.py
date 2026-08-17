@@ -1,6 +1,7 @@
 import pygame
-from constants import PLAYER_RADIUS, SCREEN_WIDTH, SCREEN_HEIGHT, PLAYER_TURN_SPEED, PLAYER_SPEED
+from constants import PLAYER_RADIUS, PLAYER_SHOT_SPEED, SCREEN_WIDTH, SCREEN_HEIGHT, PLAYER_TURN_SPEED, PLAYER_SPEED
 from circleshape import CircleShape
+from shot import Shot
 
 
 class Player(CircleShape):
@@ -20,22 +21,44 @@ class Player(CircleShape):
         self.rotation += PLAYER_TURN_SPEED * dt
 
     def update(self, dt: float) -> None:
+        # Read the keyboard state once per frame so movement and shooting
+        # respond to the player's current input without checking the OS again.
         keys = pygame.key.get_pressed()
 
+        # Rotate left or right based on A/D input.
         if keys[pygame.K_a]:
             self.rotate(-dt)
 
         if keys[pygame.K_d]:
             self.rotate(+dt)
 
+        # Move forward or backward relative to the ship's current facing.
         if keys[pygame.K_w]:
             self.move(dt)
 
         if keys[pygame.K_s]:
             self.move(-dt)
 
+        # Fire a shot when space is held down.
+        if keys[pygame.K_SPACE]:
+            self.shoot(dt)
+
     def move(self, dt: float) -> None:
+        # The ship's forward direction is a vector pointing down the screen,
+        # then rotated to match the ship's current angle.
         unit_vector = pygame.Vector2(0, 1)
         rotated_vector = unit_vector.rotate(self.rotation)
         rotated_with_speed_vector = rotated_vector * PLAYER_SPEED * dt
         self.position += rotated_with_speed_vector
+
+    def shoot(self, dt: float) -> None:
+        # Spawn a projectile just in front of the ship and send it forward
+        # at a constant speed.
+        forward = pygame.Vector2(0, 1).rotate(self.rotation)
+        shot_velocity = forward * PLAYER_SHOT_SPEED
+        shot = Shot(
+            self.position.x + forward.x * self.radius,
+            self.position.y + forward.y * self.radius,
+        )
+        shot.velocity = shot_velocity
+    
