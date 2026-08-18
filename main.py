@@ -28,14 +28,18 @@ def main():
     Player.containers = (updatable, drawable)
     Asteroid.containers = (asteroids, updatable, drawable)
     AsteroidField.containers = (updatable)
-    Shot.containers = (shots, updatable, drawable)
     asteroid_field = AsteroidField()
-
-    shots = pygame.sprite.Group()
+    Shot.containers = (shots, updatable, drawable)
     
 
     # Create the player in the center of the screen; pygame will auto-add it.
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, PLAYER_RADIUS)
+
+    # 1. Load the texture and use .convert() to optimize rendering speed
+    bg_texture = pygame.image.load("sky.jpeg").convert()
+
+# 2. Scale the texture to the exact size of your screen
+    bg_texture = pygame.transform.scale(bg_texture, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
     while True:
         # Limit the loop to 60 FPS and convert the elapsed time to seconds.
@@ -60,7 +64,7 @@ def main():
                 sys.exit()
 
         # Draw the background and all visible sprites each frame.
-        screen.fill((6, 30, 41))
+        screen.blit(bg_texture, (0, 0))
         for sprite in drawable:
             # These sprites implement draw(screen) instead of using an image/rect.
             sprite.draw(screen)
