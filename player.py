@@ -1,5 +1,5 @@
 import pygame
-from constants import PLAYER_RADIUS, PLAYER_SHOT_SPEED, SCREEN_WIDTH, SCREEN_HEIGHT, PLAYER_TURN_SPEED, PLAYER_SPEED
+from constants import PLAYER_RADIUS, PLAYER_SHOOT_COOLDOWN, PLAYER_SHOT_SPEED, SCREEN_WIDTH, SCREEN_HEIGHT, PLAYER_TURN_SPEED, PLAYER_SPEED, PLAYER_SHOOT_COOLDOWN
 from circleshape import CircleShape
 from shot import Shot
 
@@ -8,6 +8,7 @@ class Player(CircleShape):
     def __init__(self, x: float, y: float, radius: float = PLAYER_RADIUS) -> None:
         super().__init__(x, y, radius)
         self.rotation = 0
+        self.cooldown = 0
 
     def triangle(self) -> list[pygame.Vector2]:
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -41,7 +42,11 @@ class Player(CircleShape):
 
         # Fire a shot when space is held down.
         if keys[pygame.K_SPACE]:
-            self.shoot(dt)
+            if self.cooldown <= 0:
+                self.cooldown = PLAYER_SHOOT_COOLDOWN
+                self.shoot(dt)
+            else:
+                self.cooldown -= dt
 
     def move(self, dt: float) -> None:
         # The ship's forward direction is a vector pointing down the screen,
