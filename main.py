@@ -1,4 +1,6 @@
 import sys
+from pathlib import Path
+
 import pygame
 from asteroid import Asteroid
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
@@ -36,7 +38,8 @@ def main():
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, PLAYER_RADIUS)
 
     # 1. Load the texture and use .convert() to optimize rendering speed
-    bg_texture = pygame.image.load("sky.jpeg").convert()
+    image_path = Path(__file__).resolve().parent / "images" / "sky.jpeg"
+    bg_texture = pygame.image.load(str(image_path)).convert()
 
     # Create a font object for rendering text on the screen
     font = pygame.font.Font(None, 36)

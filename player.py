@@ -1,7 +1,8 @@
 import pygame
-from constants import PLAYER_RADIUS, PLAYER_SHOOT_COOLDOWN, PLAYER_SHOT_SPEED, SCREEN_WIDTH, SCREEN_HEIGHT, PLAYER_TURN_SPEED, PLAYER_SPEED, PLAYER_SHOOT_COOLDOWN
+from constants import PLAYER_RADIUS, PLAYER_SHOOT_COOLDOWN, PLAYER_SHOT_SPEED, SCREEN_WIDTH, SCREEN_HEIGHT, PLAYER_TURN_SPEED, PLAYER_SPEED, PLAYER_SHOOT_COOLDOWN, LINE_WIDTH
 from circleshape import CircleShape
 from shot import Shot
+from pathlib import Path
 
 
 class Player(CircleShape):
@@ -9,6 +10,8 @@ class Player(CircleShape):
         super().__init__(x, y, radius)
         self.rotation = 0
         self.cooldown = 0
+        image_path = Path(__file__).resolve().parent / "images" / "rocket_ship.png"
+        self.texture = pygame.image.load(str(image_path)).convert_alpha()
 
     def triangle(self) -> list[pygame.Vector2]:
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -17,6 +20,16 @@ class Player(CircleShape):
         b = self.position - forward * self.radius - right
         c = self.position - forward * self.radius + right
         return [a, b, c]
+
+    def draw(self, screen: pygame.Surface) -> None:
+        size = int(self.radius * 2)
+        texture = pygame.transform.smoothscale(
+            self.texture,
+            (size, size * 2),
+        )
+        rotated_texture = pygame.transform.rotate(texture, 180 - self.rotation)
+        position = rotated_texture.get_rect(center=self.position)
+        screen.blit(rotated_texture, position)
 
     def rotate(self, dt: float) -> None:
         self.rotation += PLAYER_TURN_SPEED * dt

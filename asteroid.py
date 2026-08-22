@@ -1,4 +1,5 @@
 import random
+from pathlib import Path
 
 import pygame
 from circleshape import CircleShape
@@ -8,9 +9,14 @@ from logger import log_event
 class Asteroid(CircleShape):
     def __init__(self, x: float, y: float, radius: float) ->None:
         super().__init__(x, y, radius)
-
+        image_path = Path(__file__).resolve().parent / "images" / "asteroid_image.png"
+        self.texture = pygame.image.load(str(image_path)).convert_alpha()
+        
     def draw(self, screen: pygame.Surface) -> None:
-        pygame.draw.circle(screen, ("white"), self.position, self.radius, LINE_WIDTH)
+        size = int(self.radius * 2)
+        scaled_texture = pygame.transform.scale(self.texture, (size, size))
+        position = scaled_texture.get_rect(center=self.position)
+        screen.blit(scaled_texture, position)
 
     def update(self, dt:float) -> None:
         self.position += self.velocity * dt
