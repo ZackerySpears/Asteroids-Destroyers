@@ -38,8 +38,14 @@ def main():
     # 1. Load the texture and use .convert() to optimize rendering speed
     bg_texture = pygame.image.load("sky.jpeg").convert()
 
+    # Create a font object for rendering text on the screen
+    font = pygame.font.Font(None, 36)
+
 # 2. Scale the texture to the exact size of your screen
     bg_texture = pygame.transform.scale(bg_texture, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+    # Initialize a counter for the number of asteroids destroyed
+    asteroids_destroyed = 0
 
     while True:
         # Limit the loop to 60 FPS and convert the elapsed time to seconds.
@@ -68,6 +74,7 @@ def main():
             for shot in shots:
                 if asteroid.collides_with(shot):
                     log_event("asteroid_shot")
+                    asteroids_destroyed += 1
                     asteroid.split()
                     shot.kill()
 
@@ -76,6 +83,14 @@ def main():
         for sprite in drawable:
             # These sprites implement draw(screen) instead of using an image/rect.
             sprite.draw(screen)
+
+        # Render the score after the background so it remains visible.
+        score_text = font.render(
+            f"Asteroids Destroyed: {asteroids_destroyed}",
+            True,
+            "white",
+        )
+        screen.blit(score_text, (20, 20))
 
         pygame.display.flip()
 
