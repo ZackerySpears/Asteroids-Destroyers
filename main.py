@@ -63,6 +63,14 @@ def main():
                 print("Game over!")
                 sys.exit()
 
+        # Check for collisions between shots and asteroids.
+        for asteroid in asteroids:
+            for shot in shots:
+                if asteroid.collides_with(shot):
+                    log_event("asteroid_shot")
+                    asteroid.split()
+                    shot.kill()
+
         # Draw the background and all visible sprites each frame.
         screen.blit(bg_texture, (0, 0))
         for sprite in drawable:
